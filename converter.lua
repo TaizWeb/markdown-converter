@@ -12,6 +12,7 @@ function convertLine(line)
 	local headingMode = false
 	local emphasisMode = false
 	local boldMode = false
+	local strikeMode = false
 
 	-- Metadata
 	local convertedLine = ""
@@ -68,6 +69,20 @@ function convertLine(line)
 			lastTouchedChar = i
 			lastChange = 2 -- Setting the last change to bold
 			boldMode = not boldMode
+		elseif char == "~" and nextChar == "~" then
+			if lastTouchedChar == 1 then
+				convertedLine = convertedLine .. string.sub(line, lastTouchedChar, i-1)
+			else
+				convertedLine = convertedLine .. string.sub(line, lastTouchedChar+2, i-1)
+			end
+			if not strikeMode then
+				convertedLine = convertedLine .. "<s>"
+			else
+				convertedLine = convertedLine .. "</s>"
+			end
+			lastTouchedChar = i
+			lastChange = 2 -- Setting the last change to strike
+			strikeMode = not strikeMode
 		end
 	end
 
@@ -88,3 +103,4 @@ for line in io.lines("15JAN20.md") do
 	print(line)
 end
 
+print(convertLine("I ~~strikethrough~~ **some** _text_"))
