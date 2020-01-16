@@ -17,13 +17,18 @@ function convertLine(line)
 	local convertedLine = ""
 	local lastTouchedChar = 1
 	local lastChange = 0 -- 0: none, 1: emphasis, 2: bolded. This is probably a terrible solution.
+	local closeParagraph = false
 
 	-- Loop over every character in a line
 	for i = 1, string.len(line) do
 		char = string.sub(line, i, i)
 		nextChar = string.sub(line, i+1, i+1)
+		-- Checking whether or not to insert a <p> tag
+		if i == 1 and char ~= "#" then
+			convertedLine = convertedLine .. "<p>"
+			closeParagraph = true
 		-- Checking for headings
-		if char == "#" then
+		elseif char == "#" and i == 1 then
 			headingMode = true
 			convertedLine = convertedLine .. "<h1>"
 			convertedLine = convertedLine .. string.sub(line, i+2)
@@ -70,11 +75,16 @@ function convertLine(line)
 	if not headingMode then
 		convertedLine = convertedLine .. string.sub(line, lastTouchedChar+lastChange)
 	end
+	if closeParagraph then
+		convertedLine = convertedLine .. "</p>"
+	end
 
 	return convertedLine
 end
 
+firstLine = true
 for line in io.lines("15JAN20.md") do
-	print(convertLine(line))
+	line = convertLine(line)
+	print(line)
 end
 
