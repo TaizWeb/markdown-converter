@@ -24,8 +24,9 @@ function convertLine(line)
 	for i = 1, string.len(line) do
 		char = string.sub(line, i, i)
 		nextChar = string.sub(line, i+1, i+1)
+		thirdChar = string.sub(line, i+2, i+2)
 		-- Checking whether or not to insert a <p> tag
-		if i == 1 and char ~= "#" then
+		if i == 1 and char ~= "#" and char ~= "-" then
 			convertedLine = convertedLine .. "<p>"
 			closeParagraph = true
 		-- Checking for headings
@@ -69,6 +70,7 @@ function convertLine(line)
 			lastTouchedChar = i
 			lastChange = 2 -- Setting the last change to bold
 			boldMode = not boldMode
+		-- Check for strikethrough
 		elseif char == "~" and nextChar == "~" then
 			if lastTouchedChar == 1 then
 				convertedLine = convertedLine .. string.sub(line, lastTouchedChar, i-1)
@@ -83,6 +85,9 @@ function convertLine(line)
 			lastTouchedChar = i
 			lastChange = 2 -- Setting the last change to strike
 			strikeMode = not strikeMode
+		-- Checking for horizontal line
+		elseif char == "-" and nextChar == "-" and thirdChar == "-" then
+			return "<hr/>"
 		end
 	end
 
@@ -103,4 +108,5 @@ for line in io.lines("15JAN20.md") do
 	print(line)
 end
 
-print(convertLine("I ~~strikethrough~~ **some** _text_"))
+print(convertLine("This is an **_odd_** test..."))
+print(convertLine("---"))
