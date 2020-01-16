@@ -16,7 +16,9 @@ lastChange = 0 -- 0: none, 1: emphasis, 2: bolded. This is probably a terrible s
 --line = io.read()
 --line = "# I'm a heading!"
 --line = "I'm a _test_ string. I _test_ the output!"
-line = "I'm a **bolded** string. I test **bolded** input! **Bolded** input every day!"
+--line = "I'm a **bolded** string. I test **bolded** input! **Bolded** input every day!"
+--line = "I'm a **hardass**. I do _both_!"
+line = "I'm a _hardass_. I do **both**!"
 
 -- Loop over every character in a line
 for i = 1, string.len(line) do
@@ -33,7 +35,12 @@ for i = 1, string.len(line) do
 		if lastTouchedChar == 1 then
 			convertedLine = convertedLine .. string.sub(line, lastTouchedChar, i-1)
 		else
-			convertedLine = convertedLine .. string.sub(line, lastTouchedChar+1, i-1)
+			-- This may be where the bug lives
+			if lastChange == 2 then
+				convertedLine = convertedLine .. string.sub(line, lastTouchedChar+2, i-1)
+			else
+				convertedLine = convertedLine .. string.sub(line, lastTouchedChar+1, i-1)
+			end
 		end
 		if not emphasisMode then
 			convertedLine = convertedLine .. "<em>"
