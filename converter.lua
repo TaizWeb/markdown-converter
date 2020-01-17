@@ -13,6 +13,7 @@ function convertLine(line)
 	local emphasisMode = false
 	local boldMode = false
 	local strikeMode = false
+	local imageMode = false
 
 	-- Metadata
 	local convertedLine = ""
@@ -21,9 +22,16 @@ function convertLine(line)
 	local closeParagraph = false
 	local linkName = ""
 	local linkLink = ""
+	local imageName = ""
+	local imageLink = ""
+	local imageLinkFirstIndex = 0
+	local imageLinkLastIndex = 0
+	local imageNameFirstIndex = 0
+	local imageNameLastIndex = 0
 
 	-- Loop over every character in a line
 	for i = 1, string.len(line) do
+		lastChar = string.sub(line, i-1, i-1)
 		char = string.sub(line, i, i)
 		nextChar = string.sub(line, i+1, i+1)
 		thirdChar = string.sub(line, i+2, i+2)
@@ -89,26 +97,52 @@ function convertLine(line)
 		-- Checking for horizontal line
 		elseif char == "-" and nextChar == "-" and thirdChar == "-" then
 			return "<hr/>"
-		-- Checking for links (consider link mode incase symbols are used in other places?
-		elseif char == "[" then
+		-- Checking for links
+		elseif char == "[" and lastChar ~= "!" then
+			linkMode = true
 			linkNameFirstIndex = i
-		elseif char == "]" then
+		elseif char == "]" and linkMode then
 			linkNameLastIndex = i
 			linkName = string.sub(line, linkNameFirstIndex+1, linkNameLastIndex-1)
-		elseif char == "(" then
+		elseif char == "(" and linkMode then
 			linkLinkFirstIndex = i
-		elseif char == ")" then
+		elseif char == ")" and linkMode then
 			linkLinkLastIndex = i
 			linkLink = string.sub(line, linkLinkFirstIndex+1, linkLinkLastIndex-1)
+		elseif char == "!" and nextChar == "[" then
+			imageMode = true
+			imageNameFirstIndex = i+1
+		elseif char == "]" and imageMode then
+			imageNameLastIndex = i
+			imageName = string.sub(line, imageNameFirstIndex+1, imageNameLastIndex-1)
+		elseif char == "(" and imageMode then
+			imageLinkFirstIndex = i
+		elseif char == ")" and imageMode then
+			imageLinkLastIndex = i
+			imageLink = string.sub(line, imageLinkFirstIndex+1, imageLinkLastIndex-1)
 		end
 		-- Insert the link
-		if string.len(linkName) > 0 and string.len(linkLink) > 0 then
+		if string.len(linkName) > 0 and string.len(linkLink) > 0 and linkMode then
 			convertedLine = convertedLine .. string.sub(line, lastTouchedChar+lastChange, linkNameFirstIndex-1)
 			lastTouchedChar = linkLinkLastIndex-1
 			convertedLine = convertedLine .. "<a href='" .. linkLink .. "'>" .. linkName .. "</a>"
 			--convertedLine = convertedLine .. string.sub(line, linkNameFirstIndex-1, linkLinkLastIndex)
+			lastChange = 2
+			-- Resetting the values
 			linkName = ""
 			linkLink = ""
+			linkMode = false
+		end
+		-- Insert the image
+		if string.len(imageName) > 0 and string.len(imageLink) > 0 and imageMode then
+			convertedLine = convertedLine .. string.sub(line, lastTouchedChar+lastChange, imageNameFirstIndex-2)
+			lastTouchedChar = imageLinkLastIndex+1
+			convertedLine = convertedLine .. "<img src='" .. imageLink .. "'>" .. imageName .. "</img>"
+			lastChange = 0
+			-- Resetting the values
+			imageName = ""
+			imageLink = ""
+			imageMode = false
 		end
 	end
 
@@ -125,13 +159,16 @@ function convertLine(line)
 end
 
 firstLine = true
-for line in io.lines("15JAN20.md") do
-	--line = convertLine(line)
-	--print(line)
+for line in io.lines("test.md") do
+	line = convertLine(line)
+	print(line)
 end
 
 --print(convertLine("This is an **_odd_** test..."))
 --print(convertLine("---"))
-print(convertLine("Try _this_ and see if **you** survive"))
-print(convertLine("And _here's_ a [link](http://example.com) for **you**, and another one [here](http://google.com)"))
+--print(convertLine("Try _this_ and see if **you** survive"))
+--print(convertLine("And _here's_ a [link](http://example.com) for **you**, and another one [here](http://google.com)"))
+--print(convertLine("Here's a regular ![image](http://google.com/logo.png)"))
+--print(convertLine("Finally, here's an ![image](http://google.com/logo.png) with a [link](http://example.com)"))
+--print(convertLine("And here's a switcheroo: [link](http://example.com) ![image](http://google.com/logo.png)"))
 
