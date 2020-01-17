@@ -31,12 +31,12 @@ function convertLine(line)
 		nextChar = string.sub(line, i+1, i+1)
 		thirdChar = string.sub(line, i+2, i+2)
 
-		-- Checking whether or not to insert a <p> tag THIS BITCH. THIS BITCH IS DOING IT
+		-- Checking whether or not to insert a <p> tag
 		if i == 1 and char ~= "#" and char ~= "-" and (char ~= "`" and nextChar ~= "`" and thirdChar ~= "`") and not codeBlockMode then
 			convertedLine = convertedLine .. "<p>"
 			closeParagraph = true
-		-- Checking for headings
 		end
+		-- Checking for headings
 		if char == "#" and i == 1 then
 			headingMode = true
 			convertedLine = convertedLine .. "<h1>"
@@ -63,7 +63,9 @@ function convertLine(line)
 			emphasisMode = not emphasisMode
 		-- Checking for bolding
 		elseif char == "*" and nextChar == "*" then
-			if lastTouchedChar == 1 then
+			if i == 1 then
+				convertedLine = convertedLine .. string.sub(line, lastTouchedChar+2, i-1)
+			elseif lastTouchedChar == 1 then
 				convertedLine = convertedLine .. string.sub(line, lastTouchedChar, i-1)
 			else
 				convertedLine = convertedLine .. string.sub(line, lastTouchedChar+lastChange, i-1)
