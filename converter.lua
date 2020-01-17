@@ -39,9 +39,17 @@ function convertLine(line)
 		-- Checking for headings
 		if char == "#" and i == 1 then
 			headingMode = true
-			convertedLine = convertedLine .. "<h1>"
-			convertedLine = convertedLine .. string.sub(line, i+2)
-			convertedLine = convertedLine .. "</h1>"
+			headingCount = 1
+			for j = 2, 6 do
+				if string.sub(line, j, j) == "#" then
+					headingCount = j
+				else
+					break
+				end
+			end
+			convertedLine = convertedLine .. "<h" .. headingCount .. ">"
+			convertedLine = convertedLine .. string.sub(line, i+headingCount+1)
+			convertedLine = convertedLine .. "</h" .. headingCount .. ">"
 		-- Checking for emphasis
 		elseif char == "_" then
 			if lastTouchedChar == 1 then
