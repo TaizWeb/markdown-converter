@@ -1,9 +1,12 @@
 -- convertLine: Returns valid HTML from markdown input
+local codeBlockMode = false -- Since this spans multiple lines, it needs to be on the outside
+
 function convertLine(line)
 	-- Mode states
 	local headingMode = false
 	local emphasisMode = false
 	local boldMode = false
+	local codeMode = false
 	local strikeMode = false
 	local imageMode = false
 
@@ -27,12 +30,14 @@ function convertLine(line)
 		char = string.sub(line, i, i)
 		nextChar = string.sub(line, i+1, i+1)
 		thirdChar = string.sub(line, i+2, i+2)
-		-- Checking whether or not to insert a <p> tag
-		if i == 1 and char ~= "#" and char ~= "-" then
+
+		-- Checking whether or not to insert a <p> tag THIS BITCH. THIS BITCH IS DOING IT
+		if i == 1 and char ~= "#" and char ~= "-" and (char ~= "`" and nextChar ~= "`" and thirdChar ~= "`") and not codeBlockMode then
 			convertedLine = convertedLine .. "<p>"
 			closeParagraph = true
 		-- Checking for headings
-		elseif char == "#" and i == 1 then
+		end
+		if char == "#" and i == 1 then
 			headingMode = true
 			convertedLine = convertedLine .. "<h1>"
 			convertedLine = convertedLine .. string.sub(line, i+2)
@@ -86,6 +91,34 @@ function convertLine(line)
 			lastTouchedChar = i
 			lastChange = 2 -- Setting the last change to strike
 			strikeMode = not strikeMode
+		-- Checking for code blocks
+		elseif char == "`" and nextChar == "`" and thirdChar == "`" then
+			if not codeBlockMode then
+				convertedLine = convertedLine .. "<pre>"
+			else
+				convertedLine = convertedLine .. "</pre>"
+			end
+			lastChange = 3 -- Setting to last change to codeBlock
+			codeBlockMode = true
+		-- Checking for inline code blocks
+		elseif char == "`" and not codeBlockMode then
+			if lastTouchedChar == 1 then
+				convertedLine = convertedLine .. string.sub(line, lastTouchedChar, i-1)
+			else
+				if lastChange == 2 then
+					convertedLine = convertedLine .. string.sub(line, lastTouchedChar+2, i-1)
+				else
+					convertedLine = convertedLine .. string.sub(line, lastTouchedChar+1, i-1)
+				end
+			end
+			if not codeMode then
+				convertedLine = convertedLine .. "<pre>"
+			else
+				convertedLine =	convertedLine .. "</pre>"
+			end
+			lastTouchedChar = i
+			lastChange = 1 -- Setting the last change to emphasis/code
+			codeMode = not codeMode
 		-- Checking for horizontal line
 		elseif char == "-" and nextChar == "-" and thirdChar == "-" then
 			return "<hr/>"
