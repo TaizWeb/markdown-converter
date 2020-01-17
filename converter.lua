@@ -19,6 +19,8 @@ function convertLine(line)
 	local lastTouchedChar = 1
 	local lastChange = 0 -- 0: none, 1: emphasis, 2: bolded. This is probably a terrible solution.
 	local closeParagraph = false
+	local linkName = ""
+	local linkLink = ""
 
 	-- Loop over every character in a line
 	for i = 1, string.len(line) do
@@ -40,7 +42,6 @@ function convertLine(line)
 			if lastTouchedChar == 1 then
 				convertedLine = convertedLine .. string.sub(line, lastTouchedChar, i-1)
 			else
-				-- This may be where the bug lives
 				if lastChange == 2 then
 					convertedLine = convertedLine .. string.sub(line, lastTouchedChar+2, i-1)
 				else
@@ -88,6 +89,26 @@ function convertLine(line)
 		-- Checking for horizontal line
 		elseif char == "-" and nextChar == "-" and thirdChar == "-" then
 			return "<hr/>"
+		-- Checking for links (consider link mode incase symbols are used in other places?
+		elseif char == "[" then
+			linkNameFirstIndex = i
+		elseif char == "]" then
+			linkNameLastIndex = i
+			linkName = string.sub(line, linkNameFirstIndex+1, linkNameLastIndex-1)
+		elseif char == "(" then
+			linkLinkFirstIndex = i
+		elseif char == ")" then
+			linkLinkLastIndex = i
+			linkLink = string.sub(line, linkLinkFirstIndex+1, linkLinkLastIndex-1)
+		end
+		-- Insert the link
+		if string.len(linkName) > 0 and string.len(linkLink) > 0 then
+			convertedLine = convertedLine .. string.sub(line, lastTouchedChar+lastChange, linkNameFirstIndex-1)
+			lastTouchedChar = linkLinkLastIndex-1
+			convertedLine = convertedLine .. "<a href='" .. linkLink .. "'>" .. linkName .. "</a>"
+			--convertedLine = convertedLine .. string.sub(line, linkNameFirstIndex-1, linkLinkLastIndex)
+			linkName = ""
+			linkLink = ""
 		end
 	end
 
@@ -95,6 +116,7 @@ function convertLine(line)
 	if not headingMode then
 		convertedLine = convertedLine .. string.sub(line, lastTouchedChar+lastChange)
 	end
+	-- Close a paragraph tag if one is open
 	if closeParagraph then
 		convertedLine = convertedLine .. "</p>"
 	end
@@ -104,9 +126,12 @@ end
 
 firstLine = true
 for line in io.lines("15JAN20.md") do
-	line = convertLine(line)
-	print(line)
+	--line = convertLine(line)
+	--print(line)
 end
 
-print(convertLine("This is an **_odd_** test..."))
-print(convertLine("---"))
+--print(convertLine("This is an **_odd_** test..."))
+--print(convertLine("---"))
+print(convertLine("Try _this_ and see if **you** survive"))
+print(convertLine("And _here's_ a [link](http://example.com) for **you**, and another one [here](http://google.com)"))
+
