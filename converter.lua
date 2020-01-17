@@ -69,7 +69,7 @@ function convertLine(line)
 			if lastTouchedChar == 1 then
 				convertedLine = convertedLine .. string.sub(line, lastTouchedChar, i-1)
 			else
-				convertedLine = convertedLine .. string.sub(line, lastTouchedChar+2, i-1)
+				convertedLine = convertedLine .. string.sub(line, lastTouchedChar+lastChange, i-1)
 			end
 			if not boldMode then
 				convertedLine = convertedLine .. "<strong>"
