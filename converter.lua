@@ -1,11 +1,3 @@
--- Tests
---line = io.read()
---line = "# I'm a heading!"
---line = "I'm a _test_ string. I _test_ the output!"
---line = "I'm a **bolded** string. I test **bolded** input! **Bolded** input every day!"
---line = "I'm a **hardass**. I do _both_!"
---line = "I'm a _hardass_. I do **both**!"
-
 -- convertLine: Returns valid HTML from markdown input
 function convertLine(line)
 	-- Mode states
@@ -163,12 +155,4 @@ for line in io.lines("test.md") do
 	line = convertLine(line)
 	print(line)
 end
-
---print(convertLine("This is an **_odd_** test..."))
---print(convertLine("---"))
---print(convertLine("Try _this_ and see if **you** survive"))
---print(convertLine("And _here's_ a [link](http://example.com) for **you**, and another one [here](http://google.com)"))
---print(convertLine("Here's a regular ![image](http://google.com/logo.png)"))
---print(convertLine("Finally, here's an ![image](http://google.com/logo.png) with a [link](http://example.com)"))
---print(convertLine("And here's a switcheroo: [link](http://example.com) ![image](http://google.com/logo.png)"))
 
