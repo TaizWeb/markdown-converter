@@ -39,6 +39,7 @@ function convertLine(line)
 		-- Checking for headings
 		if char == "#" and i == 1 then
 			headingMode = true
+			-- Looping to count how many #'s are in the line
 			headingCount = 1
 			for j = 2, 6 do
 				if string.sub(line, j, j) == "#" then
@@ -47,6 +48,7 @@ function convertLine(line)
 					break
 				end
 			end
+			-- Creating the proper heading
 			convertedLine = convertedLine .. "<h" .. headingCount .. ">"
 			convertedLine = convertedLine .. string.sub(line, i+headingCount+1)
 			convertedLine = convertedLine .. "</h" .. headingCount .. ">"
