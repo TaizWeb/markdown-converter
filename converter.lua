@@ -195,7 +195,6 @@ function convertLine(line)
 	return convertedLine
 end
 
-firstLine = true
 for line in io.lines("test.md") do
 	line = convertLine(line)
 	print(line)
