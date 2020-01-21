@@ -133,7 +133,7 @@ function convertLine(line)
 			codeMode = not codeMode
 		-- Checking for horizontal line
 		elseif char == "-" and nextChar == "-" and thirdChar == "-" then
-			return "<hr/>"
+			return "<hr/>\n"
 		-- Checking for links
 		elseif char == "[" and lastChar ~= "!" then
 			linkMode = true
@@ -192,7 +192,10 @@ function convertLine(line)
 		convertedLine = convertedLine .. "</p>"
 	end
 
-	return convertedLine
+	-- Return convertedLine if it's not blank (to strip blank lines in input)
+	if convertedLine ~= "" then
+		return convertedLine .. "\n"
+	end
 end
 
 -- Delete the file if it already exists
@@ -205,7 +208,7 @@ io.output(outputFile)
 -- Taking the first arg (the input file) and converting it line by line
 for line in io.lines(arg[1]) do
 	-- Appending it to the file
-	io.write(convertLine(line) .. "\n")
+	io.write(convertLine(line))
 end
 
 -- Unstaging the file after output is complete
