@@ -124,9 +124,9 @@ function convertLine(line)
 				end
 			end
 			if not codeMode then
-				convertedLine = convertedLine .. "<pre>"
+				convertedLine = convertedLine .. "<code>"
 			else
-				convertedLine =	convertedLine .. "</pre>"
+				convertedLine =	convertedLine .. "</code>"
 			end
 			lastTouchedChar = i
 			lastChange = 1 -- Setting the last change to emphasis/code
