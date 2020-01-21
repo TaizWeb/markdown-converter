@@ -198,22 +198,31 @@ function convertLine(line)
 	end
 end
 
--- Delete the file if it already exists
-os.remove(arg[2])
+-- If either argument is unset, print an error message
+if arg[1] == nil or arg[2] == nil then
+	print("Error: Missing arguments.")
+	print("Usage: lua path/to/converter.lua input.md output.html")
+elseif arg[3] ~= nil then
+	print("Error: Too many arguments.")
+	print("Usage: lua path/to/converter.lua input.md output.html")
+else
+	-- Delete the file if it already exists
+	os.remove(arg[2])
 
--- Open file and stage it for output
-local outputFile = io.open(arg[2], "a")
-io.output(outputFile)
+	-- Open file and stage it for output
+	local outputFile = io.open(arg[2], "a")
+	io.output(outputFile)
 
--- Taking the first arg (the input file) and converting it line by line
-for line in io.lines(arg[1]) do
-	-- Appending it to the file
-	io.write(convertLine(line))
+	-- Taking the first arg (the input file) and converting it line by line
+	for line in io.lines(arg[1]) do
+		-- Appending it to the file
+		io.write(convertLine(line))
+	end
+
+	-- Print a success message
+	print("File '" .. arg[1] .. "' successfully converted to '" .. arg[2] .. "'!")
+
+	-- Unstaging the file after output is complete
+	io.close(outputFile)
 end
-
--- Print a success message
-print("File '" .. arg[1] .. "' successfully converted to '" .. arg[2] .. "'!")
-
--- Unstaging the file after output is complete
-io.close(outputFile)
 
