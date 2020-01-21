@@ -211,6 +211,9 @@ for line in io.lines(arg[1]) do
 	io.write(convertLine(line))
 end
 
+-- Print a success message
+print("File '" .. arg[1] .. "' successfully converted to '" .. arg[2] .. "'!")
+
 -- Unstaging the file after output is complete
 io.close(outputFile)
 
