@@ -195,8 +195,19 @@ function convertLine(line)
 	return convertedLine
 end
 
-for line in io.lines("test.md") do
-	line = convertLine(line)
-	print(line)
+-- Delete the file if it already exists
+os.remove(arg[2])
+
+-- Open file and stage it for output
+local outputFile = io.open(arg[2], "a")
+io.output(outputFile)
+
+-- Taking the first arg (the input file) and converting it line by line
+for line in io.lines(arg[1]) do
+	-- Appending it to the file
+	io.write(convertLine(line) .. "\n")
 end
+
+-- Unstaging the file after output is complete
+io.close(outputFile)
 
