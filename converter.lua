@@ -1,6 +1,6 @@
--- convertLine: Returns valid HTML from markdown input
 local codeBlockMode = false -- Since this spans multiple lines, it needs to be on the outside
 
+-- convertLine: Returns valid HTML from markdown input
 function convertLine(line)
 	-- Mode states
 	local headingMode = false
