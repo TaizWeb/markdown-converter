@@ -174,7 +174,8 @@ function convertLine(line)
 		if string.len(imageName) > 0 and string.len(imageLink) > 0 and imageMode then
 			convertedLine = convertedLine .. string.sub(line, lastTouchedChar+lastChange, imageNameFirstIndex-2)
 			lastTouchedChar = imageLinkLastIndex+1
-			convertedLine = convertedLine .. "<img src='" .. imageLink .. "'>" .. imageName .. "</img>"
+			convertedLine = convertedLine .. "<img src='" .. imageLink .. "'" .. " alt='" .. imageName .. "'/>\n"
+			convertedLine = convertedLine .. "<figcaption>" .. imageName .. "</figcaption>"
 			lastChange = 0
 			-- Resetting the values
 			imageName = ""
